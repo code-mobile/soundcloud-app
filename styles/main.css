@@ -3,6 +3,12 @@
 	background-color: #c9b6eb;
   }
   
+
+.section-title h1{
+    color: black;
+    background-color: rgb(216, 37, 37);
+}
+
   .topnav a {
 	float: left;
 	display: block;
@@ -55,7 +61,7 @@
     }
     
 #team {
-    background: #eee !important;
+    /*background: #eee !important;*/
 }
 
 .btn-primary:hover,
@@ -68,18 +74,20 @@
 
 .btn-primary {
     color: #fff;
-    background-color: #007b5e;
+    background-color: #fff;
     border-color: #007b5e;
 }
 
 section {
     padding: 60px 0;
+    
 }
 
 section .section-title {
     text-align: center;
-    color: #007b5e;
+    color: #108d6f;
     margin-bottom: 50px;
+    display: block;
 }
 
 #team .card {
@@ -179,3 +187,47 @@ section .section-title {
     height: 120px;
     border-radius: 50%;
 }
+
+
+html{
+    height: 100%;
+    
+
+}
+body {
+     position:relative; 
+     min-height: 100%;
+
+     
+    background-image: url("../images/bg.jpeg"); 
+ 
+       
+}
+.container{
+    padding-bottom:5rem;
+}
+footer{
+    position:absolute; 
+    bottom: 0; 
+    left: 0; 
+    right: 0; 
+    background-color:  #c9b6eb;
+    height: 60px;
+    text-align: center;
+}
+
+
+.description{
+    padding-bottom:5rem;
+    /*background-color:  #c9b6eb;*/
+    font-size: 18px;
+    text-align: right;
+    text-align: left;
+    padding: 70px 0;
+    margin-left: 100px;
+    margin-right: 100px;
+    text-align: center;
+}
+
+
+

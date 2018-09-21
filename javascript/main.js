@@ -11,7 +11,10 @@ UI.EnterPress = function(){
 		if(e.which === 13) {
 			//pushToDOM(input);
 			SoundCloudApi.getTrack(input);
-		}	
+			UI.StartSpinner();
+			UI.ShowTitle();
+		}
+			
 	});
 };
 
@@ -21,11 +24,42 @@ UI.SumbitClick = function(){
 	document.querySelector('.js-submit').addEventListener('click', function(){
 		var input = document.querySelector('input').value;
 		SoundCloudApi.getTrack(input);
-
+		UI.StartSpinner();
+		UI.ShowTitle();
 	});
 };
 
 UI.SumbitClick();
+
+
+
+
+
+
+
+
+UI.StartSpinner = function(){
+	
+	var target = document.getElementById('main-spinner');
+    var spinner = new Spinner().spin(target);	
+
+	
+};
+
+UI.ShowTitle = function(){
+	
+	var title = document.getElementById('title');
+	title.innerHTML = 'Music found: ';	
+	//title.style.display = 'none';
+
+	
+};
+
+
+
+
+
+
 
 /*2 Query Soundcloud api*/
 
@@ -38,7 +72,7 @@ SoundCloudApi.init = function(){
 	SC.initialize({
 		client_id: '340f063c670272fac27cfa67bffcafc4'
 	});
-}
+};
 
 SoundCloudApi.init();
 
@@ -46,27 +80,37 @@ SoundCloudApi.init();
 
 SoundCloudApi.getTrack = function(inputValue){
 	SC.get('/tracks', {
-	  q: inputValue
+		q: inputValue
 	}).then(function(tracks) {
-	  console.log(tracks);
-	  SoundCloudApi.renderTracks(tracks);
+		SoundCloudApi.renderTracks(tracks);
 	});
+};
 
-	// SC.stream('/tracks/268562411').then(function(player){
-	// 	player.play();
-	//   });
 
-}
+UI.play = function(str){
+	if (str == 'all') {
+		
+		return ( 'The track is available' );
+	  } else {
+		return ( 'The track can only be played on SoundCloud web site' ); 
+	  }
+	
+};
+
+
+
+
+
 
 UI.prettyTime = function(str){
-	const min = Math.floor(str/60000) 
-	const sec = Math.floor(str/1000 % 60)
+	const min = Math.floor(str/60000);
+	const sec = Math.floor(str/1000 % 60);
 
-	return min + ':' + (sec.toString().length === 1 ? '0' + sec : sec)
-}
+	return min + ':' + (sec.toString().length === 1 ? '0' + sec : sec);
+};
 // the tracks are presented as cards
 SoundCloudApi.renderTracks = function(tracks){
-
+	console.log(tracks);
 	var searchResults = document.querySelector('.js-search-results');
 	searchResults.innerHTML = '';
 	
@@ -80,7 +124,8 @@ SoundCloudApi.renderTracks = function(tracks){
 										<div class="card-body text-center">
 											<p><img class=" img-fluid" src=${track.artwork_url || 'https://i1.sndcdn.com/avatars-000131869186-my9qya-t500x500.jpg'} alt="card image"></p>
 											<h4 class="card-title">${track.title}</h4>
-											<p class="card-text">${track.genre || 'pop'}</p>
+											<p class="card-text">${track.genre || 'music'}</p>
+											<p class="card-text">${UI.play(track.embeddable_by)}</p>
 											<p class="card-text">Track duration: ${UI.prettyTime(track.duration)} </p>
 										</div>
 									</div>
@@ -89,10 +134,10 @@ SoundCloudApi.renderTracks = function(tracks){
 									<div class="card">
 										<div class="card-body text-center mt-4">
 											<h4 class="card-title">${track.title}</h4>
-											<p class="card-text">This is basic card.</p>
+											<p class="card-text">Press the button to play the track</p>
 											<ul class="list-inline">
 												<li class="list-inline-item">
-													<a href="#" class="btn btn-primary btn-sm play-button" id="${track.permalink_url}"><i class="fa fa-plus"></i></a>
+													<a href="#" class="btn btn-primary btn-sm play-button" id="${track.permalink_url}"><i class="fa fa-play"></i></a>
 												</li>
 											</ul>
 										</div>
@@ -100,49 +145,56 @@ SoundCloudApi.renderTracks = function(tracks){
 								</div>
 							</div>
 						</div>
-					</div>`
-				
-		//var searchResults = document.querySelector('.js-search-results');
+					</div>`;
+
 		searchResults.insertAdjacentHTML('beforeend', card);		
 	});	
 
-	Array.from(document.getElementsByClassName("play-button")).forEach(function(node) {
-		node.addEventListener('click', function(){
-			SoundCloudApi.getEmbed(node.id);
-		});
-	});
 
+	Array.from(document.getElementsByClassName("play-button")).forEach(function(button) {
+		button.addEventListener('click', function(){
+		
+			SoundCloudApi.getEmbed(button.id);
+			console.log(button.id);
+	
+	    });
+		
+    });
+
+	
 };
 
-
-
-/*4 Add to playlist and play*/
-
-
-
 SoundCloudApi.getEmbed =  function(trackURL){
-	console.log("click inside embed");
+	var opts = {
+		color: '#ffffff',
+		top: '10%', // Top position relative to parent
+		left: '50%', // Left position relative to parent
+		position: 'absolute' // Element positioning
+	};
+	var target = document.querySelector('.player');
+    var spinner = new Spinner(opts).spin(target);	
+
 	SC.oEmbed(trackURL, {
-	  auto_play: true,
-	  maxheight: 100,
+		auto_play: true,
+		maxheight: 100,
+				
 	}).then(function(embed){
-	  console.log('oEmbed response: ', embed);
+			
+		console.log(embed);
+			
+		var playerDiv = document.querySelector('.player');
+		playerDiv.innerHTML = '';
+		
+		var box = document.createElement('div');
+		
+		box.innerHTML = embed.html;
+        	
+		playerDiv.insertBefore(box, playerDiv.firstChild);
+	
+	   		
+	})
+	
 
-
-	  var playerDiv = document.querySelector('.player');
-	  playerDiv.innerHTML = ''
-	  
-	  var box = document.createElement('div');
-	  box.innerHTML = embed.html;
-
-	  playerDiv.insertBefore(box, playerDiv.firstChild);
-	});
-}
-
-
-
-
-
-
+};
 
 
